@@ -1,7 +1,7 @@
 SnoopyFix
 =======
 
-Pymetasploit3 is a full-fledged Python3 Metasploit automation library. It can interact with Metasploit either through msfrpcd or the msgrpc plugin in msfconsole.
+Snoopyfix is a full-fledged security tool used to fix bugs in Ubuntu Operating 22.04 LTS version.
 
 
 
@@ -26,9 +26,7 @@ Launch the tool  ```snoopyfix``` or ```sudo python3 snoopyfix ``` if the first m
 
 
 
-### More examples
 
-Many other usage examples can be found in the `example_usage.py` file.
 
 # Contributions
 
