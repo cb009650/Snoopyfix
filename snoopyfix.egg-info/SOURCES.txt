@@ -1,0 +1,8 @@
+misconfig.py
+setup.py
+snoopyfix.py
+snoopyfix.egg-info/PKG-INFO
+snoopyfix.egg-info/SOURCES.txt
+snoopyfix.egg-info/dependency_links.txt
+snoopyfix.egg-info/entry_points.txt
+snoopyfix.egg-info/top_level.txt
