@@ -1,4 +1,5 @@
-import misconfig , subprocess , shlex , os ,sys,colorama ,shutil
+import misconfig , subprocess , shlex , os ,sys,colorama ,shutil , pandas , tabulate
+
 list_of_total_misconfigurations = []
 
 
@@ -20,29 +21,10 @@ def center_text(text):
     return centered_text
 
 
-# def Asses_Telnet():
-#     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' telnet"
-#     exec_result = Execute_command(command)
-#     if (exec_result.stdout.__contains__("telnet\tunknown ok not-installed\tnot-installed")):
-#         pass
-#     else:
-#         misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES",["telnet is installed"])
-#         list_of_total_misconfigurations.append(misconfiguration)
-      
-# def Asses_LDAP():
-
-#     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' slapd"
-#     exec_result = Execute_command(command)
-  
-#     if (exec_result.stdout.__contains__("slapd\tunknown ok not-installed\tnot-installed")):
-#         pass
-#     else:
-#         print("ldp client is installed")
-#         # misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES",["telnet is installed"])
-#         # list_of_total_misconfigurations.append(misconfiguration)
 # ============================================================================================================================================================
 #                                                                  SPRINT - 01
 # ============================================================================================================================================================
+# Developed by Eshen Sanjula Warawita
 def Asses_NIS():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' nis"
     exec_result = Execute_command(command)
@@ -52,7 +34,7 @@ def Asses_NIS():
         pass
     else:
         print("nis client is installed")
-        misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES","NIS is installed")
+        misconfiguration = misconfig.Misconfiguration("NIS is installed","NETWORK SERVICES","Can lead to DoS attacks")
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_NIS ():
@@ -71,7 +53,7 @@ def Asses_rsh_client():
         pass
     else:
         print("rsh-client is installed")
-        misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES","rsh-client is installed")
+        misconfiguration = misconfig.Misconfiguration("rsh-client is installed","NETWORK SERVICES","These legacy clients contain numerous security exposures")
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_rsh_client ():
@@ -92,7 +74,7 @@ def Asses_talkClient():
         pass
     else :
         print("talk client is installed")
-        misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES","talk-client is installed")
+        misconfiguration = misconfig.Misconfiguration("talk-client is installed","NETWORK SERVICES","Can lead to DoS attacks")
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_talk_client ():
@@ -101,19 +83,65 @@ def Delete_talk_client ():
     if result.returncode != 1:
         print("successfullt uninstalled talk-client")
 
-# def Asses_RPC():
-#     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' rpcbind"
-#     exec_result = Execute_command(command)
-  
-#     print(exec_result.returncode)
-#     if (exec_result.stdout.__contains__("rpcbind\tunknown ok not-installed\tnot-installed") or exec_result.stderr):
-#         print("rpc client is not installed")
-#         pass
-#     else :
-#         print("rpc client is installed")
-#         # misconfiguration = misconfig.Misconfiguration("NETWORK SERVICES",["telnet is installed"])
-#         # list_of_total_misconfigurations.append(misconfiguration)
+# ============================================================================================================================================================
+#                                                                  SPRINT - 02
+# ============================================================================================================================================================
 
+def Asses_Telnet():
+    command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' telnet"
+    exec_result = Execute_command(command)
+    if (exec_result.stdout.__contains__("telnet\tunknown ok not-installed\tnot-installed")):
+        pass
+    else:
+        misconfiguration = misconfig.Misconfiguration("telnet is installed","NETWORK SERVICES","buzz")
+        list_of_total_misconfigurations.append(misconfiguration)
+
+def Delete_telnet():
+    command = "apt purge slapd"
+    result = Execute_command(command)
+    if result.returncode != 1:
+        print("successfullt uninstalled rsh-client")
+
+
+      
+def Asses_LDAP():
+
+    command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' slapd"
+    exec_result = Execute_command(command)
+  
+    if (exec_result.stdout.__contains__("slapd\tunknown ok not-installed\tnot-installed")):
+        pass
+    else:
+        print("ldp client is installed")
+        misconfiguration = misconfig.Misconfiguration("LDAP is installed","NETWORK SERVICES","buzz")
+        list_of_total_misconfigurations.append(misconfiguration)
+
+def Delete_LDAP():
+    command = "apt purge slapd"
+    result = Execute_command(command)
+    if result.returncode != 1:
+        print("successfullt uninstalled rsh-client")
+
+
+def Asses_RPC():
+  
+    command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' rpcbind"
+    exec_result = Execute_command(command)
+  
+   
+    if (exec_result.stdout.__contains__("rpcbind\tunknown ok not-installed\tnot-installed") or exec_result.stderr):
+        print("rpc client is not installed")
+        pass
+    else :
+        print("rpc client is installed")
+        misconfiguration = misconfig.Misconfiguration("Telnet is insatlled","NETWORK SERVICES","buzz")
+        list_of_total_misconfigurations.append(misconfiguration)
+
+def Delete_RPC():
+    command = "apt purge rpcbind"
+    result = Execute_command(command)
+    if result.returncode != 1:
+        print("successfullt uninstalled rsh-client")
 
       
       
@@ -181,28 +209,50 @@ def Get_python_version ():
         supportability = False
     return supportability
 
+
+
+
 def Display_Misconfigurations():
     
     if (len(list_of_total_misconfigurations) != 0 ):
         print(colorama.Fore.RED+"WARNING!!!!".center(45) +colorama.Style.RESET_ALL)
-        print("=============================================")
-        print("The Following Misconfigurations Were Detected".upper())
-        print("=============================================\n")
-        for misconfiguration in list_of_total_misconfigurations:
-            print(f"{len(misconfiguration.list_of_misconfigurations)} issue/s were found relating to the {misconfiguration.misconfiguration_name.lower()}")
-            for individual_misconfiguration in misconfiguration.list_of_misconfigurations:
-                print(f"[*] {individual_misconfiguration}")
+        for vuln_item in list_of_total_misconfigurations:
+            print(f''' 
+Vulnerability name : {vuln_item.misconfiguration_name} [!]
+Vulnerability type : {vuln_item.misconfiguration_type}
+Vulnerbaility info : {vuln_item.vuln_info}''')
+        
+
+        # data = {
+        #     "Vulnerability Name".upper() : [vuln.misconfiguration_name for vuln in list_of_total_misconfigurations],
+        #     "Vulnerability Category".upper() : [vuln.misconfiguration_type  for vuln in list_of_total_misconfigurations],
+        #     "Vulnerability Impact".upper() : [vuln.vuln_info for vuln in list_of_total_misconfigurations]
+        # }
+    
+        # table_str = tabulate.tabulate(data, headers='keys', tablefmt='fancy_grid',colalign=("center","center","center"),maxcolwidths=30)
+        # print(table_str)
+       
+
+       
+        
+        # print("=============================================")
+        # print("The Following Misconfigurations Were Detected".upper())
+        # print("=============================================\n")
+        # for misconfiguration in list_of_total_misconfigurations:
+        #     print(f"{len(misconfiguration.list_of_misconfigurations)} issue/s were found relating to the {misconfiguration.misconfiguration_name.lower()}")
+        #     for individual_misconfiguration in misconfiguration.list_of_misconfigurations:
+        #         print(f"[*] {individual_misconfiguration}")
         
     else:
         print(colorama.Fore.GREEN+"no misconfigurations were found in the system")
 
 def fix_misconfigurations():
     for misconfiguration in list_of_total_misconfigurations:
-        if misconfiguration.list_of_misconfigurations == "NIS is installed":
+        if misconfiguration.misconfiguration_name == "NIS is installed":
             Delete_NIS()
-        if misconfiguration.list_of_misconfigurations == "rsh-client is installed":
+        if misconfiguration.misconfiguration_name  == "rsh-client is installed":
             Delete_rsh_client()
-        if misconfiguration.list_of_misconfigurations == "talk-client is installed":
+        if misconfiguration.misconfiguration_name  == "talk-client is installed":
             Delete_talk_client()
        
 def init():
@@ -231,10 +281,10 @@ def init():
 
     
     # Asses_auditd()
-    # Asses_Telnet()
-    # Asses_LDAP()
+    Asses_Telnet()
+    Asses_LDAP()
     Asses_NIS()
-    # Asses_RPC()
+    Asses_RPC()
     Asses_talkClient()
     Asses_rsh_client()
     Display_Misconfigurations()
@@ -251,21 +301,21 @@ def init():
 def main_introduction():
     
     banner = colorama.Fore.GREEN+"""\
-       ,-~~-.___.               __  __      _   _  _
-      / |  x     \             █▀ █▄░█ █▀█ █▀█ █▀█ █▄█   █▀▀ █ ▀▄▀
-     (  )        0             ▄█ █░▀█ █▄█ █▄█ █▀▀ ░█░   █▀░ █ █░█(Ubuntu 22.04.2 LTS version)
-      \_/-, ,----'  ____        
-         ====      ||   \_ 
-        /  \-'~;   ||     |                v.1.0.0
-       /  __/~| ...||__/|-"   Your one and only OS hardening automated tool for your operating system
-     =(  _____||________|                  -- A project by APIIT SOC --
+       ,-~~-.___.                   
+      / |  x     \                   █▀ █▄░█ █▀█ █▀█ █▀█ █▄█   █▀▀ █ ▀▄▀
+     (  )        0                   ▄█ █░▀█ █▄█ █▄█ █▀▀ ░█░   █▀░ █ █░█
+      \_/-, ,----'  ____                     
+         ====      ||   \_               (Ubuntu 22.04.2 LTS version) 
+        /  \-'~;   ||     |                        v.1.0.0
+       /  __/~| ...||__/|-"      Your one and only OS hardening automated tool
+     =(  _____||________|                   -- A project by APIIT SOC --
     """
 
     print(center_text(banner))
     print("===============")
     print("ABOUT US".center(15))
     print("===============\n")
-    print("The OSHARDX script was originally developed for the XYZ company to improve the security postures of XYZ's machines which run Ubuntu 22.04.2 LTS edition.")
+    print("The OSHARDX script was originally developed for the XYZ company to improve the security postures of XYZ's machines which run Ubuntu 22.04.2 LTS edition.\n")
 
     print("===============")
     print("USAGE".center(16))
