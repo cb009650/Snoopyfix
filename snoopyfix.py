@@ -1,7 +1,11 @@
-import misconfig , subprocess , shlex , os ,sys,colorama ,shutil , pandas , tabulate
+import misconfig , subprocess , shlex , os ,sys,colorama ,shutil , time, pandas , tabulate
 
 list_of_total_misconfigurations = []
 
+YELLOW= colorama.Fore.YELLOW
+RED= colorama.Fore.RED
+GREEN =  colorama.Fore.GREEN
+BLUE= colorama.Fore.BLUE
 
 
 def center_text(text):
@@ -28,16 +32,17 @@ def center_text(text):
 def Asses_NIS():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' nis"
     exec_result = Execute_command(command)
-    print(exec_result.stdout + exec_result.stderr)
+    # print(exec_result.stdout + exec_result.stderr)
  
     if (exec_result.stdout.__contains__("nis\tunknown ok not-installed\tnot-installed")):
         pass
     else:
         print("nis client is installed")
-        misconfiguration = misconfig.Misconfiguration("NIS is installed","NETWORK SERVICES","Can lead to DoS attacks")
+        misconfiguration = misconfig.Misconfiguration("NIS is installed","NETWORK SERVICES","Can lead to DoS attacks",Delete_NIS)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_NIS ():
+    print("run nis")
     command = "apt purge nis"
     result = Execute_command(command)
     if result.returncode != 1:
@@ -47,18 +52,21 @@ def Delete_NIS ():
 def Asses_rsh_client():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' rsh-client"
     exec_result = Execute_command(command)
-    print(exec_result.stdout )
+    # print(exec_result.stdout )
    
     if (exec_result.stdout.__contains__("rsh-client\tunknown ok not-installed\tnot-installed")):
         pass
     else:
         print("rsh-client is installed")
-        misconfiguration = misconfig.Misconfiguration("rsh-client is installed","NETWORK SERVICES","These legacy clients contain numerous security exposures")
+        misconfiguration = misconfig.Misconfiguration("rsh-client is installed","NETWORK SERVICES","These legacy clients contain numerous security exposures",Delete_rsh_client)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_rsh_client ():
+    print("run rsh")
     command = "apt purge rsh-client"
+    print("123")
     result = Execute_command(command)
+    print(result)
     if result.returncode != 1:
         print("successfullt uninstalled rsh-client")
 
@@ -67,17 +75,18 @@ def Delete_rsh_client ():
 def Asses_talkClient():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' talk"
     exec_result = Execute_command(command)
-    print(exec_result.stdout + exec_result.stderr)
+    # print(exec_result.stdout + exec_result.stderr)
 
     if (exec_result.stdout.__contains__("talk\tunknown ok not-installed\tnot-installed") or exec_result.stderr):
         
         pass
     else :
         print("talk client is installed")
-        misconfiguration = misconfig.Misconfiguration("talk-client is installed","NETWORK SERVICES","Can lead to DoS attacks")
+        misconfiguration = misconfig.Misconfiguration("talk-client is installed","NETWORK SERVICES","Can lead to DoS attacks",Delete_talk_client)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_talk_client ():
+    print("run talk")
     command = "apt purge talk"
     result = Execute_command(command)
     if result.returncode != 1:
@@ -93,14 +102,15 @@ def Asses_Telnet():
     if (exec_result.stdout.__contains__("telnet\tunknown ok not-installed\tnot-installed")):
         pass
     else:
-        misconfiguration = misconfig.Misconfiguration("telnet is installed","NETWORK SERVICES","buzz")
+        misconfiguration = misconfig.Misconfiguration("telnet is installed","NETWORK SERVICES","buzz",Delete_telnet)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_telnet():
-    command = "apt purge slapd"
+    print("run")
+    command = "apt purge telnet"
     result = Execute_command(command)
     if result.returncode != 1:
-        print("successfullt uninstalled rsh-client")
+        print("successfullt uninstalled telnet")
 
 
       
@@ -113,14 +123,15 @@ def Asses_LDAP():
         pass
     else:
         print("ldp client is installed")
-        misconfiguration = misconfig.Misconfiguration("LDAP is installed","NETWORK SERVICES","buzz")
+        misconfiguration = misconfig.Misconfiguration("LDAP is installed","NETWORK SERVICES","buzz",Delete_LDAP)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_LDAP():
+    print("run")
     command = "apt purge slapd"
     result = Execute_command(command)
     if result.returncode != 1:
-        print("successfullt uninstalled rsh-client")
+        print("successfullt uninstalled slapd")
 
 
 def Asses_RPC():
@@ -134,10 +145,11 @@ def Asses_RPC():
         pass
     else :
         print("rpc client is installed")
-        misconfiguration = misconfig.Misconfiguration("Telnet is insatlled","NETWORK SERVICES","buzz")
+        misconfiguration = misconfig.Misconfiguration("Telnet is insatlled","NETWORK SERVICES","buzz",Delete_RPC)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_RPC():
+    print("run")
     command = "apt purge rpcbind"
     result = Execute_command(command)
     if result.returncode != 1:
@@ -171,8 +183,15 @@ def Delete_RPC():
 
 
 def Execute_command(command):
-    exec_result = subprocess.run(shlex.split(command),capture_output=True,text=True)
-    return exec_result
+        try:
+            exec_result = subprocess.run(shlex.split(command),capture_output=True,text=True)
+            print(exec_result)
+            return exec_result
+        except subprocess.CalledProcessError as e:
+            print(e)
+
+    
+      
 
 
 
@@ -217,10 +236,12 @@ def Display_Misconfigurations():
     if (len(list_of_total_misconfigurations) != 0 ):
         print(colorama.Fore.RED+"WARNING!!!!".center(45) +colorama.Style.RESET_ALL)
         for vuln_item in list_of_total_misconfigurations:
-            print(f''' 
-Vulnerability name : {vuln_item.misconfiguration_name} [!]
+            print(YELLOW+f''' 
+[{list_of_total_misconfigurations.index(vuln_item)}]\t Vulnerability name : {vuln_item.misconfiguration_name} [!]
 Vulnerability type : {vuln_item.misconfiguration_type}
 Vulnerbaility info : {vuln_item.vuln_info}''')
+            for i in range(0,3):
+                print(".")
         
 
         # data = {
@@ -247,13 +268,9 @@ Vulnerbaility info : {vuln_item.vuln_info}''')
         print(colorama.Fore.GREEN+"no misconfigurations were found in the system")
 
 def fix_misconfigurations():
+    print(list_of_total_misconfigurations)
     for misconfiguration in list_of_total_misconfigurations:
-        if misconfiguration.misconfiguration_name == "NIS is installed":
-            Delete_NIS()
-        if misconfiguration.misconfiguration_name  == "rsh-client is installed":
-            Delete_rsh_client()
-        if misconfiguration.misconfiguration_name  == "talk-client is installed":
-            Delete_talk_client()
+        Delete_rsh_client()
        
 def init():
     ROOT_LEVEL = Check_for_root_priviledges()
@@ -261,13 +278,13 @@ def init():
     UBUNTU_VERSION = Check_for_OS_version()
    
     if (ROOT_LEVEL == "GENERAL_USER"):
-        print("The above script requires root permission to be executed")
+        print(YELLOW + " [*] The above script requires root permission to be executed" + colorama.Fore.RESET)
         return
     if (CORRECT_PYTHON_VERSION == False):
-        print("The script requires a python version of 3 or above")
+        print(YELLOW +"[*] The script requires a python version of 3 or above"+colorama.Fore.RESET)
         return
     if (UBUNTU_VERSION == False):
-        print("The script only works for Ubuntu 22.04.2 LTS version")
+        print(YELLOW +"[*] The script only works for Ubuntu 22.04.2 LTS version"+colorama.Fore.RESET)
         return
     
     # command = "bash firewall.sh"
@@ -281,20 +298,47 @@ def init():
 
     
     # Asses_auditd()
-    Asses_Telnet()
-    Asses_LDAP()
-    Asses_NIS()
-    Asses_RPC()
-    Asses_talkClient()
-    Asses_rsh_client()
+    # Asses_Telnet()
+    # Asses_LDAP()
+    # Asses_NIS()
+    # Asses_RPC()
+    # Asses_talkClient()
+    # Asses_rsh_client()
+    detect_misconfigurations()
     Display_Misconfigurations()
     for symbol in range(0,3):
             print("\n")
-    user_choice = input(colorama.Fore.YELLOW+"Do you want to fix the found misconfigurations(Y/N)?"+colorama.Fore.RESET)
-    if (user_choice.lower() == "y" or user_choice.lower() == "yes"):
-        fix_misconfigurations()
-    else:
-        pass
+    print("The following isconfigurations were found")
+    print("[1] ALL")
+    print("[2] SELECTED")
+    print("[3] NONE")
+    
+    try:
+        user_choice = int(input("Select your option :"))
+        if user_choice in range(1,4):
+            if user_choice == 1:
+                fix_misconfigurations()
+
+            elif user_choice == 2:
+                user_choice = input("Enter controls separated by a ',' (ex : 1,2,8 .. ): ").split(",")
+                print(user_choice)
+             
+            else:
+                print("Exiting........")
+                time.sleep(1)
+                return
+        else:
+            print("Invalid index . Please enter a valid index")
+            
+            
+    except:
+        print("OPPPS SOMETHING WENT WRONG")
+
+def detect_misconfigurations():
+    array = [Asses_Telnet, Asses_rsh_client,Asses_RPC,Asses_LDAP,Asses_talkClient,Asses_NIS]
+    for detect_misconfig in array:
+        detect_misconfig()
+
 
 
 
@@ -312,6 +356,7 @@ def main_introduction():
     """
 
     print(center_text(banner))
+    print(f"Detected python version is {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
     print("===============")
     print("ABOUT US".center(15))
     print("===============\n")
@@ -325,9 +370,9 @@ def main_introduction():
     print("TROUBLESHOOTING")
     print("===============\n")
     print("Please make sure the following requirements are satisfied:\n")
-    print(colorama.Fore.YELLOW+"[*] A python version of 3.10.6 or above is installed in the system to avoid any compatability issues")
-    print("[*] A Ubuntu 22.04.2 LTS version Operating System")
-    print("[*] The script is executed with Root Priviledges\n"+colorama.Fore.RESET)
+    # print(colorama.Fore.YELLOW+"[*] A python version of 3.10.6 or above is installed in the system to avoid any compatability issues")
+    # print("[*] A Ubuntu 22.04.2 LTS version Operating System")
+    # print("[*] The script is executed with Root Priviledges\n"+colorama.Fore.RESET)
     print("Once the script has been executed if any service needs to be re-installed for any additional use please install them separately.\n")
     for symbol in range(0,3):
                 print("\n")
