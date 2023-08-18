@@ -25,14 +25,9 @@ def center_text(text):
     return centered_text
 
 
-# ============================================================================================================================================================
-#                                                                  SPRINT - 01
-# ============================================================================================================================================================
-# Developed by Eshen Sanjula Warawita
 def Asses_NIS():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' nis"
     exec_result = Execute_command(command)
-    # print(exec_result.stdout + exec_result.stderr)
  
     if (exec_result.stdout.__contains__("nis\tunknown ok not-installed\tnot-installed")):
         pass
@@ -42,17 +37,16 @@ def Asses_NIS():
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_NIS ():
-    print("run nis")
     command = "apt purge nis"
-    result = Execute_command(command)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled NIS")
+        print("NIS uninstallation ------------------ successfull")
 
 
 def Asses_rsh_client():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' rsh-client"
     exec_result = Execute_command(command)
-    # print(exec_result.stdout )
    
     if (exec_result.stdout.__contains__("rsh-client\tunknown ok not-installed\tnot-installed")):
         pass
@@ -62,21 +56,17 @@ def Asses_rsh_client():
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_rsh_client ():
-    print("run rsh")
     command = "apt purge rsh-client"
-    print("123")
-    result = Execute_command(command)
-    print(result)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled rsh-client")
+        print("rsh-client uninstallation ------------------ successfull")
 
 
 
 def Asses_talkClient():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' talk"
     exec_result = Execute_command(command)
-    # print(exec_result.stdout + exec_result.stderr)
-
     if (exec_result.stdout.__contains__("talk\tunknown ok not-installed\tnot-installed") or exec_result.stderr):
         
         pass
@@ -86,31 +76,31 @@ def Asses_talkClient():
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_talk_client ():
-    print("run talk")
     command = "apt purge talk"
-    result = Execute_command(command)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled talk-client")
+        print("talk uninstallation ------------------ successfull")
 
-# ============================================================================================================================================================
-#                                                                  SPRINT - 02
-# ============================================================================================================================================================
 
 def Asses_Telnet():
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' telnet"
     exec_result = Execute_command(command)
-    if (exec_result.stdout.__contains__("telnet\tunknown ok not-installed\tnot-installed")):
+   
+    if (exec_result.stdout.__contains__("telnet	unknown ok not-installed	not-installed")):
         pass
+        
     else:
         misconfiguration = misconfig.Misconfiguration("telnet is installed","NETWORK SERVICES","buzz",Delete_telnet)
-        list_of_total_misconfigurations.append(misconfiguration)
+        list_of_total_misconfigurations.append(misconfiguration) 
+        
 
 def Delete_telnet():
-    print("run")
     command = "apt purge telnet"
-    result = Execute_command(command)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled telnet")
+        print("telnet uninstallation ------------------ successfull")
 
 
       
@@ -118,8 +108,7 @@ def Asses_LDAP():
 
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' slapd"
     exec_result = Execute_command(command)
-  
-    if (exec_result.stdout.__contains__("slapd\tunknown ok not-installed\tnot-installed")):
+    if (exec_result.stdout.__contains__("slapd	unknown ok not-installed	not-installed")):
         pass
     else:
         print("ldp client is installed")
@@ -127,71 +116,37 @@ def Asses_LDAP():
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_LDAP():
-    print("run")
     command = "apt purge slapd"
-    result = Execute_command(command)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled slapd")
+        print("slapd uninstallation ------------------ successfull")
 
 
 def Asses_RPC():
   
     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' rpcbind"
     exec_result = Execute_command(command)
-  
-   
     if (exec_result.stdout.__contains__("rpcbind\tunknown ok not-installed\tnot-installed") or exec_result.stderr):
-        print("rpc client is not installed")
         pass
     else :
         print("rpc client is installed")
-        misconfiguration = misconfig.Misconfiguration("Telnet is insatlled","NETWORK SERVICES","buzz",Delete_RPC)
+        misconfiguration = misconfig.Misconfiguration("RCP is installed","NETWORK SERVICES","buzz",Delete_RPC)
         list_of_total_misconfigurations.append(misconfiguration)
 
 def Delete_RPC():
-    print("run")
     command = "apt purge rpcbind"
-    result = Execute_command(command)
+    dec = "Y"
+    result = subprocess.run(shlex.split(command),capture_output=True,input=dec,text=True)
     if result.returncode != 1:
-        print("successfullt uninstalled rsh-client")
-
-      
-      
-# def Asses_auditd ():
-#     local_misconfigurations = []
-#     command = "dpkg-query -W -f='${binary:Package}\t${Status}\t${db:Status-Status}\n' auditd audispd-plugins"
-#     exec_result = Execute_command(command)
-#     if (exec_result.stdout.__contains__("installed")):
-       
-#         auditd_enabled_command= "systemctl is-enabled auditd"
-#         auditd_active_command = "systemctl is-active auditd"
-#         auditd_enabled_status = Execute_command(auditd_enabled_command)
-#         auditd_active_status = Execute_command(auditd_active_command)
-#         if (auditd_enabled_status.stdout == "enabled" and auditd_active_status.stdout == "active"):
-#             pass
-#         else:
-#             local_misconfigurations.append("auditd is not enabled/active")
-
-
-#     else:
-#         local_misconfigurations.append("auditd is not installed")
-    
-#     audit_misconfiguration = misconfig.Misconfiguration("AUDITD",local_misconfigurations)
-#     list_of_total_misconfigurations.append(audit_misconfiguration)
+        print("RCP uninstallation ------------------ successfull")
 
 
 
 
 def Execute_command(command):
-        try:
-            exec_result = subprocess.run(shlex.split(command),capture_output=True,text=True)
-            print(exec_result)
-            return exec_result
-        except subprocess.CalledProcessError as e:
-            print(e)
-
-    
-      
+        exec_result = subprocess.run(shlex.split(command),capture_output=True,text=True)
+        return exec_result
 
 
 
@@ -237,12 +192,13 @@ def Display_Misconfigurations():
         print(colorama.Fore.RED+"WARNING!!!!".center(45) +colorama.Style.RESET_ALL)
         for vuln_item in list_of_total_misconfigurations:
             print(YELLOW+f''' 
-[{list_of_total_misconfigurations.index(vuln_item)}]\t Vulnerability name : {vuln_item.misconfiguration_name} [!]
-Vulnerability type : {vuln_item.misconfiguration_type}
-Vulnerbaility info : {vuln_item.vuln_info}''')
-            for i in range(0,3):
-                print(".")
+            [{list_of_total_misconfigurations.index(vuln_item)}]
+            Vulnerability name : {vuln_item.misconfiguration_name} [!]
+            Vulnerability type : {vuln_item.misconfiguration_type}
+            Vulnerbaility info : {vuln_item.vuln_info}''')
+        flag = " misconfigs"
         
+
 
         # data = {
         #     "Vulnerability Name".upper() : [vuln.misconfiguration_name for vuln in list_of_total_misconfigurations],
@@ -266,11 +222,13 @@ Vulnerbaility info : {vuln_item.vuln_info}''')
         
     else:
         print(colorama.Fore.GREEN+"no misconfigurations were found in the system")
+        flag = "no misconfigs"
+    return flag
 
 def fix_misconfigurations():
-    print(list_of_total_misconfigurations)
+
     for misconfiguration in list_of_total_misconfigurations:
-        Delete_rsh_client()
+        misconfiguration.fix_misconfiguration()
        
 def init():
     ROOT_LEVEL = Check_for_root_priviledges()
@@ -287,48 +245,56 @@ def init():
         print(YELLOW +"[*] The script only works for Ubuntu 22.04.2 LTS version"+colorama.Fore.RESET)
         return
     
-    # command = "bash firewall.sh"
-    # result = Execute_command(command)
-    # ports = [item for item in result.stdout.split("\n") if item not in ['','missing a firewall rule']]
-    # for port in ports:
-    #     required_port = port.split(" ")
-    #     required_port = required_port[2].strip('"')
-    #     print( type(int(required_port)))
+    
     main_introduction()
 
+    user_input = input("I have read the terms of conditions of OSHARD and understand the effects of executing the script[yes/no]:")
+    if (user_input.lower() == "yes" or user_input.lower() =="y"):
+        for symbol in range(0,4):
+                print("\n")
+        
+    else:
+        print("Exiting........")
+        time.sleep(1)
+        return
     
-    # Asses_auditd()
-    # Asses_Telnet()
-    # Asses_LDAP()
-    # Asses_NIS()
-    # Asses_RPC()
-    # Asses_talkClient()
-    # Asses_rsh_client()
+    
     detect_misconfigurations()
-    Display_Misconfigurations()
-    for symbol in range(0,3):
+    
+    flag = Display_Misconfigurations()
+    if flag =="no misconfigs":
+        print("Exiting........")
+        time.sleep(1)
+        return
+    else:
+        pass
+
+    for symbol in range(0,4):
             print("\n")
-    print("The following isconfigurations were found")
-    print("[1] ALL")
+    print("The following is configurations were found")
+    print("[1] FIX")
     print("[2] SELECTED")
-    print("[3] NONE")
+    print("[3] EXIT")
+
     
     try:
-        user_choice = int(input("Select your option :"))
-        if user_choice in range(1,4):
-            if user_choice == 1:
-                fix_misconfigurations()
+        while True:
+            user_choice = int(input("Select your option :"))
+            if user_choice in range(1,3):
+                if user_choice == 1:
+                    fix_misconfigurations()
+                    return
 
-            elif user_choice == 2:
-                user_choice = input("Enter controls separated by a ',' (ex : 1,2,8 .. ): ").split(",")
-                print(user_choice)
-             
+                elif user_choice == 2:
+                    user_choice = input("Enter controls separated by a ',' (ex : 1,2,8 .. ): ").split(",")
+                    print(user_choice)
+                
+                else:
+                    print("Exiting........")
+                    time.sleep(1)
+                    return
             else:
-                print("Exiting........")
-                time.sleep(1)
-                return
-        else:
-            print("Invalid index . Please enter a valid index")
+                print("Invalid index . Please enter a valid index")
             
             
     except:
@@ -338,8 +304,7 @@ def detect_misconfigurations():
     array = [Asses_Telnet, Asses_rsh_client,Asses_RPC,Asses_LDAP,Asses_talkClient,Asses_NIS]
     for detect_misconfig in array:
         detect_misconfig()
-
-
+        
 
 
 def main_introduction():
@@ -376,13 +341,7 @@ def main_introduction():
     print("Once the script has been executed if any service needs to be re-installed for any additional use please install them separately.\n")
     for symbol in range(0,3):
                 print("\n")
-    user_input = input("I have read the terms of conditions of OSHARD and understand the effects of executing the script[yes/no]:")
-    if (user_input.lower() == "yes" or user_input.lower() =="y"):
-        for symbol in range(0,3):
-                print("\n")
-        
-    else:
-        pass
+    
 
 
 
