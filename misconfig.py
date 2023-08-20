@@ -11,4 +11,3 @@ class Misconfiguration:
 
     def fix_misconfiguration(self):
         self.fix()
-
