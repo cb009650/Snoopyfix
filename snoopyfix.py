@@ -283,10 +283,12 @@ def init():
             if user_choice in range(1,3):
                 if user_choice == 1:
                     fix_misconfigurations()
-                    return
 
                 elif user_choice == 2:
-                    user_choice = input("Enter controls separated by a ',' (ex : 1,2,8 .. ): ").split(",")
+                    list_of_indexes = input("Enter controls separated by a ',' (ex : 1,2,8 .. ): ").split(",")
+                    selected_controls = [list_of_total_misconfigurations[int(index)] for index in list_of_indexes]
+                    for misconfiguration in selected_controls:
+                        misconfiguration.fix_misconfiguration()
                     print(user_choice)
                 
                 else:
